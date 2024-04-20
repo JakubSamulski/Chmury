@@ -15,8 +15,6 @@ services:
       - "80:80"
     networks:
       - tic-tac-toe
-    environment:
-      - IP=${IP}
 networks:
     tic-tac-toe:
         driver: bridge

@@ -7,7 +7,9 @@ services:
     networks:
       - tic-tac-toe
     environment:
-      - IP=${IP}
+      - IP=${VITE_IP}
+    env_file:
+      - path: .env
   frontend:
     container_name: frontend
     build: ./Client
@@ -15,6 +17,7 @@ services:
       - "80:80"
     networks:
       - tic-tac-toe
+
 networks:
     tic-tac-toe:
         driver: bridge

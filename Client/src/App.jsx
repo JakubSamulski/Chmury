@@ -9,7 +9,6 @@ const renderFrom = [
     [4, 5, 6],
     [7, 8, 9],
 ];
-
 const App = () => {
     const [gameState, setGameState] = useState(JSON.parse(JSON.stringify(renderFrom)));
     const [currentPlayer, setCurrentPlayer] = useState("circle");

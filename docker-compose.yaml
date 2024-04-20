@@ -6,6 +6,8 @@ services:
       - "3000:3000"
     networks:
       - tic-tac-toe
+    environment:
+      - IP=${IP}
   frontend:
     container_name: frontend
     build: ./Client

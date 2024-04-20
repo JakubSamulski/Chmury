@@ -10,7 +10,7 @@ const renderFrom = [
     [7, 8, 9],
 ];
 const App = () => {
-    const ip = process.env.IP
+    const ip = import.meta.env.VITE_IP;
     const [gameState, setGameState] = useState(JSON.parse(JSON.stringify(renderFrom)));
     const [currentPlayer, setCurrentPlayer] = useState("circle");
     const [finishedState, setFinishedState] = useState(false);
@@ -124,7 +124,7 @@ const App = () => {
 
     function connectToServer() {
 
-        const newSocket = io("http://"+ip, {
+        const newSocket = io("http://"+ip+":3000", {
             autoConnect: true,
         });
 

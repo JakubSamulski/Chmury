@@ -1,4 +1,4 @@
-yesFROM node:21-bookworm as build
+FROM node:21-bookworm as build
 COPY . /app
 WORKDIR /app
 RUN npm install

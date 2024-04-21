@@ -19,3 +19,7 @@ variable "instance_type" {
   type        = string
   default     = "t2.micro"
 }
+
+locals {
+  private_key_path = "/home/kuba/chmury/chmury1.pem"
+}

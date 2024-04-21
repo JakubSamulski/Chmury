@@ -116,20 +116,13 @@ resource "aws_network_interface" "terra_net_interface" {
   subnet_id = aws_subnet.terra_subnet.id
   security_groups = [aws_security_group.terra_SG.id]
 }
-# assign a elastic ip to the network interface created in step 7
-resource "aws_eip" "terra_eip" {
-  domain = "vpc"
-  network_interface = aws_network_interface.terra_net_interface.id
-  associate_with_private_ip = aws_network_interface.terra_net_interface.private_ip
-  depends_on = [aws_internet_gateway.terra_IGW, aws_instance.terra_ec2]
-}
+
 # create an ubuntu server and install/enable apache2
 resource "aws_instance" "terra_ec2" {
   ami = var.ami
   instance_type = var.instance_type
   availability_zone = var.availability_zone
   key_name = "chmury1"
-  associate_public_ip_address = false
   network_interface {
     device_index = 0
     network_interface_id = aws_network_interface.terra_net_interface.id
@@ -144,6 +137,9 @@ resource "aws_instance" "terra_ec2" {
       private_key=file(local.private_key_path)
       host= self.public_ip
     }
+  }
+  provisioner "local-exec" {
+    command = "ansible-playbook -i '${self.public_ip},' -u ubuntu --private-key ${local.private_key_path} playbook.yml"
   }
   tags = {
     name = "web_server"

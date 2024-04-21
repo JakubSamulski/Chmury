@@ -19,10 +19,6 @@ output "SG_id" {
     description = "security group id"
     value = aws_security_group.terra_SG.id
 }
-output "eip" {
-    description = "public Ip of eip"
-    value = aws_eip.terra_eip.public_ip
-}
 output "instance_id" {
   description = "ID of the EC2 instance"
   value       = aws_instance.terra_ec2.id

@@ -52,23 +52,29 @@ const Square = ({
         }
     };
 
-    return (
-        <div
-            onClick={clickOnSquare}
-            className={`
-            square 
-            ${finishedState ? "not-allowed" : ""}
-            ${currentElement === "circle" || currentElement === "cross" ? "not-allowed" : ""}
-            ${currentPlayer !== playingAs ? "not-allowed" : ""}
-            ${finishedArrayState.includes(id) ? finishedState + "-won" : ""}
-            `}
-        >
-            {currentElement === "circle"
-                ? "O"
-                : currentElement === "cross"
-                    ? "X"
-                    : null}
-        </div>
+   return (
+    <div
+        onClick={clickOnSquare}
+        className={`
+        square 
+        ${finishedState ? "not-allowed" : ""}
+        ${currentElement === "circle" || currentElement === "cross" ? "not-allowed" : ""}
+        ${currentPlayer !== playingAs ? "not-allowed" : ""}
+        ${finishedArrayState.includes(id) ? finishedState + "-won" : ""}
+        `}
+         style={{
+            fontSize: "80px", // Zwiększona czcionka
+            display: "flex", // Ustawienie elementu jako flexbox
+            justifyContent: "center", // Wycentrowanie wzdłuż osi poziomej
+            alignItems: "center" // Wycentrowanie wzdłuż osi pionowej
+        }}
+    >
+        {currentElement === "circle"
+            ? "O"
+            : currentElement === "cross"
+                ? "X"
+                : null}
+    </div>
     );
 };
 

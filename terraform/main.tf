@@ -30,6 +30,8 @@ resource "aws_subnet" "terra_subnet" {
   vpc_id = aws_vpc.terra_vpc.id
   cidr_block = "10.0.1.0/24"
   availability_zone = var.availability_zone
+  map_public_ip_on_launch = true
+
 
   tags = {
     name = "my_subnet"
@@ -116,7 +118,7 @@ resource "aws_network_interface" "terra_net_interface" {
 }
 # assign a elastic ip to the network interface created in step 7
 resource "aws_eip" "terra_eip" {
-  vpc = true
+  domain = "vpc"
   network_interface = aws_network_interface.terra_net_interface.id
   associate_with_private_ip = aws_network_interface.terra_net_interface.private_ip
   depends_on = [aws_internet_gateway.terra_IGW, aws_instance.terra_ec2]
@@ -127,12 +129,22 @@ resource "aws_instance" "terra_ec2" {
   instance_type = var.instance_type
   availability_zone = var.availability_zone
   key_name = "chmury1"
-
+  associate_public_ip_address = false
   network_interface {
     device_index = 0
     network_interface_id = aws_network_interface.terra_net_interface.id
   }
-
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'waiting for ssh'"
+    ]
+    connection {
+      type="ssh"
+      user="ubuntu"
+      private_key=file(local.private_key_path)
+      host= self.public_ip
+    }
+  }
   tags = {
     name = "web_server"
   }

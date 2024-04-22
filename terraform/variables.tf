@@ -21,5 +21,5 @@ variable "instance_type" {
 }
 
 locals {
-  private_key_path = "/home/kuba/chmury/chmury1.pem"
+  private_key_path = "/home/kuba/chmury/chmury2.pem"
 }

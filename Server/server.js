@@ -1,12 +1,38 @@
-const { createServer } = require("http");
-const { Server } = require("socket.io");
+const express = require('express');
+const bodyParser = require('body-parser');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
+const cors = require('cors');
+const exchange_code = require('./auth').exchange_code;
 
-const httpServer = createServer();
+
+// Create an Express application
+const app = express();
+const ip = process.env.IP;
+// Middleware to parse JSON bodies
+app.use(bodyParser.json());
+
+// CORS configuration
+const corsOptions = {
+   origin: 'http://' + ip,
+    methods: ['GET', 'POST'],
+};
+
+app.use(cors(corsOptions));
+
+app.get('/exchange-code', (req, res) => {
+    let auth_code = req.query.auth_code
+    exchange_code(auth_code).then((data) => {res.status(200).json({ data })});
+});
+
+// Create HTTP server
+const httpServer = createServer(app);
 httpServer.listen(3000);
-const ip = process.env.IP
+
+
 const io = new Server(httpServer, {
     cors: {
-        origin: 'http://'+ip,
+        origin: 'http://' + ip,
         methods: ["GET", "POST"]
     },
 });
@@ -19,6 +45,10 @@ io.on("connection", (socket) => {
         socket: socket,
         online: true,
     };
+
+    socket.on("exchamge_code", (data) => {
+        // Your code here
+    });
 
     socket.on("request_to_play", (data) => {
         const currentUser = allUsers[socket.id];
@@ -94,3 +124,5 @@ io.on("connection", (socket) => {
         }
     });
 });
+
+console.log('Server is listening on port 3000');

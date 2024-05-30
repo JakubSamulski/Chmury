@@ -45,7 +45,7 @@ function verifyJsonWebTokenSignature(token, jsonWebKey) {
 
 function validateToken(token) {
     token = token.split(' ')[1];
-    const header = decodeTokenHeader(token);  // {"kid":"XYZAAAAAAAAAAAAAAA/1A2B3CZ5x6y7MA56Cy+6abc=", "alg": "RS256"}
+    const header = decodeTokenHeader(token);
     const jsonWebKey = getJsonWebKeyWithKID(header.kid);
     return verifyJsonWebTokenSignature(token, jsonWebKey);
 }
@@ -57,15 +57,28 @@ async function postData(url, data, headers) {
         console.log("OKAJ");
         return response.data;
     } catch (error) {
-        console.log("ERROR");
+          console.log("ERROR");
         // Optional: re-throw the error to handle it further up the call stack
     }
 }
 async function  exchange_code(code) {
     const url =
         "https://tictactoekuba.auth.us-east-1.amazoncognito.com/oauth2/token";
-    const client_id = process.env.CLIENT_ID;
-    const client_secret = process.env.CLIENT_SECRET;
+    const client_id = process.env. VITE_CLIENT_ID;
+    const client_secret = process.env.VITE_CLIENT_SECRET;
+    const ip = process.env.VITE_CLIENT_IP;
+    const port = process.env.VITE_CLIENT_PORT;
+    let redirect_uri="";
+    if(port=="80"){
+        redirect_uri = "http://"+ip+"/login";
+    }
+    else if (port==443){
+        redirect_uri = "https://"+ip+"/login";
+    }
+    else
+    {
+        redirect_uri = "http://"+ip+":"+port+"/login";
+    }
     const headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         Authorization: "Basic " + btoa(client_id + ":" + client_secret),
@@ -74,9 +87,12 @@ async function  exchange_code(code) {
         grant_type: "authorization_code",
         client_id: client_id,
         code: code,
-        redirect_uri: "http://localhost:5173/login",
+        redirect_uri: redirect_uri,
     };
     try {
+        console.log("url", url);
+        console.log("data", data);
+        console.log("headers", headers);
         return await postData(url, data, headers);
     } catch (error) {
 

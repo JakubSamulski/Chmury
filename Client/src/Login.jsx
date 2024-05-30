@@ -12,7 +12,7 @@ const Login = () => {
     const [error, setError] = useState(null);
 
     const handleSubmit = async (e) => {
-        document.location.href = 'https://tictactoekuba.auth.us-east-1.amazoncognito.com/login?response_type=code&client_id=12gmsopd070ifi6qhtto3u4arp&redirect_uri=http://localhost:5173/login';
+        document.location.href = 'https://tictactoekuba.auth.us-east-1.amazoncognito.com/login?response_type=code&client_id=12gmsopd070ifi6qhtto3u4arp&redirect_uri='+window.location.href;
     };
     if(!authCode) {
         return (
@@ -29,8 +29,9 @@ const Login = () => {
                 const params = {
                     auth_code: authCode ,
                 };
-
-            const url = 'http://localhost:3000/exchange-code';
+            const server_ip= import.meta.env.VITE_SERVER_IP;
+            const server_port = import.meta.env.VITE_SERVER_PORT;
+            const url = 'http://'+server_ip+':'+server_port+'/exchange-code';
 
             axios.get(url, { params })
                 .then(response => {

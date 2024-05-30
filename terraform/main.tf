@@ -1,4 +1,3 @@
-# create an ubuntu server and install/enable apache2
 resource "aws_instance" "terra_ec2" {
   ami = var.ami
   instance_type = var.instance_type

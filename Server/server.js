@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const {validateToken} = require("./auth");
 const exchange_code = require('./auth').exchange_code;
 
 
@@ -41,19 +42,22 @@ const allUsers = {};
 const allRooms = [];
 
 io.on("connection", (socket) => {
+    const accessToken = socket.handshake.headers.authorization;
+    const isValid = validateToken(accessToken)
+    if (!accessToken||accessToken==="null"|| !isValid) {
+        socket.disconnect(true);
+        console.error("Unauthorized connection")
+        return;
+    }
     allUsers[socket.id] = {
         socket: socket,
         online: true,
     };
 
-    socket.on("exchamge_code", (data) => {
-        // Your code here
-    });
 
     socket.on("request_to_play", (data) => {
         const currentUser = allUsers[socket.id];
         currentUser.playerName = data.playerName;
-
         let opponentPlayer;
 
         for (const key in allUsers) {
@@ -123,6 +127,10 @@ io.on("connection", (socket) => {
             }
         }
     });
+    //TODO save to db
+    socket.on("results",(results)=>{
+        console.log(results);
+    })
 });
 
 console.log('Server is listening on port 3000');

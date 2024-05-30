@@ -3,6 +3,8 @@ import "./Game.css";
 import Square from "./Square/Square";
 import {io} from "socket.io-client";
 import Swal from "sweetalert2";
+import { jwtDecode } from "jwt-decode";
+import {getUsername, isTokenExpired, refreshToken} from "./auth.jsx";
 
 const renderFrom = [
     [1, 2, 3],
@@ -16,7 +18,7 @@ const Game = () => {
     const [finishedState, setFinishedState] = useState(false);
     const [finishedArrayState, setFinishedArrayState] = useState([]);
     const [playOnline, setPlayOnline] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(!!window.localStorage.getItem("access_token"));
     const [socket, setSocket] = useState(null);
     const [playerName, setPlayerName] = useState("");
     const [opponentName, setOpponentName] = useState(null);
@@ -78,20 +80,18 @@ const Game = () => {
         }
     }, [gameState]);
 
-    const takePlayerName = async () => {
-        const result = await Swal.fire({
-            title: "Enter your name",
-            input: "text",
-            showCancelButton: true,
-            inputValidator: (value) => {
-                if (!value) {
-                    return "You need to write something!";
-                }
-            },
-        });
 
-        return result;
-    };
+     if(finishedState && finishedState !== "opponentLeftMatch" &&
+                finishedState !== "draw")
+     {
+          socket.emit("results", {
+            result: {
+                playerName: playerName,
+                result: finishedState === playingAs ? 0  : 1,
+            },
+            });
+          console.log("Sending result to server");
+     }
 
     socket?.on("opponentLeftMatch", () => {
         setFinishedState("opponentLeftMatch");
@@ -123,27 +123,30 @@ const Game = () => {
     });
 
 
-    function connectToServer() {
+    async function connectToServer() {
+        if (isTokenExpired()) {
+                await refreshToken();
+            }
 
+        const headers = {
+            Authorization: `Bearer ${window.localStorage.getItem("access_token")}`
+        }
         const newSocket = io("http://"+ip+":3000", {
             autoConnect: true,
+            extraHeaders: headers
         });
 
         newSocket?.emit("request_to_play", {
             playerName: playerName,
+
         });
 
         setSocket(newSocket);
     }
 
     async function playOnlineClick() {
-        const result = await takePlayerName();
 
-        if (!result.isConfirmed) {
-            return;
-        }
-
-        const username = result.value;
+        const username = getUsername();
         setPlayerName(username);
         setIsNewGame(true);
     }
@@ -174,7 +177,6 @@ const Game = () => {
         });
         document.location.href = "/login";
     }
-
     if (!playOnline) {
         return (
             <div className="main-div">

@@ -1,16 +1,34 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { createServer } = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const {validateToken} = require("./auth");
 const {saveGameResult} = require("./database");
 const exchange_code = require('./auth').exchange_code;
-
+const fetch = require('sync-fetch')
+const {readFileSync} = require("fs");
+const {createServer} = require("https");
 
 // Create an Express application
 const app = express();
-const ip = process.env.VITE_CLIENT_IP;
+
+ function getIp(){
+    const data = fetch('https://api.ipify.org?format=json')
+    .json()
+    console.log(data)
+     return data.ip;
+}
+
+
+let ip = ""
+if(process.env.VITE_DEPLOYMENT_TYPE==="local"){
+    ip = "localhost";
+}else if(process.env.VITE_DEPLOYMENT_TYPE==="remote"){
+    ip = getIp();
+}
+
+
+
 let port = process.env.VITE_CLIENT_PORT;
 let origin = ""
 if (port=="80"){
@@ -22,11 +40,11 @@ else if (port=="443"){
 else{
     origin = "http://"+ip+":"+port;
 }
-console.log("ORIGIN",origin);
 
-console.log("AAAAAAA",ip,port);
+const publicIp=ip;
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
+
 
 // CORS configuration
 const corsOptions = {
@@ -41,12 +59,18 @@ app.get('/exchange-code', (req, res) => {
     exchange_code(auth_code).then((data) => {res.status(200).json({ data })});
 });
 
+var privateKey = readFileSync( 'key.pem' );
+var certificate = readFileSync( 'cert.pem' );
+
 // Create HTTP server
-const httpServer = createServer(app);
-httpServer.listen(3000);
+const httpsServer = createServer({
+    key: privateKey,
+    cert: certificate
+}, app);
+httpsServer.listen(3000);
 
 
-const io = new Server(httpServer, {
+const io = new Server(httpsServer, {
     cors: {
         origin: origin,
         methods: ["GET", "POST"]
@@ -149,3 +173,4 @@ io.on("connection", (socket) => {
 });
 
 console.log('Server is listening on port 3000');
+module.exports = {publicIp}

@@ -2,11 +2,12 @@ const {response} = require("express");
 const {post} = require("axios");
 
 
-
 const jwkToPem = require('jwk-to-pem');
 
 
 const jsonwebtoken = require('jsonwebtoken');
+const {publicIp} = require("./server");
+const fetch = require("sync-fetch");
 const jsonWebKeys = [
     {
       "alg": "RS256",
@@ -61,18 +62,35 @@ async function postData(url, data, headers) {
         // Optional: re-throw the error to handle it further up the call stack
     }
 }
+
+ function getIp(){
+    const data = fetch('https://api.ipify.org?format=json')
+    .json()
+    console.log(data)
+     return data.ip;
+}
+
+
+let ip = ""
+if(process.env.VITE_DEPLOYMENT_TYPE==="local"){
+    ip = "localhost";
+}else if(process.env.VITE_DEPLOYMENT_TYPE==="remote"){
+    ip = getIp();
+}
+
 async function  exchange_code(code) {
     const url =
         "https://tictactoekuba.auth.us-east-1.amazoncognito.com/oauth2/token";
     const client_id = process.env. VITE_CLIENT_ID;
     const client_secret = process.env.VITE_CLIENT_SECRET;
-    const ip = process.env.VITE_CLIENT_IP;
     const port = process.env.VITE_CLIENT_PORT;
+
+
     let redirect_uri="";
-    if(port=="80"){
+    if(port==="80"){
         redirect_uri = "http://"+ip+"/login";
     }
-    else if (port==443){
+    else if (port===443){
         redirect_uri = "https://"+ip+"/login";
     }
     else

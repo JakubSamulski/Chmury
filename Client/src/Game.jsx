@@ -131,7 +131,7 @@ const Game = () => {
         const headers = {
             Authorization: `Bearer ${window.localStorage.getItem("access_token")}`
         }
-        const newSocket = io("http://"+ip+":3000", {
+        const newSocket = io("https://"+ip+":3000", {
             autoConnect: true,
             extraHeaders: headers
         });

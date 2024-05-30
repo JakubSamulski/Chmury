@@ -29,9 +29,8 @@ const Login = () => {
                 const params = {
                     auth_code: authCode ,
                 };
-            const server_ip= import.meta.env.VITE_SERVER_IP;
             const server_port = import.meta.env.VITE_SERVER_PORT;
-            const url = 'http://'+server_ip+':'+server_port+'/exchange-code';
+            const url = 'https://'+window.location.hostname+':'+server_port+'/exchange-code';
 
             axios.get(url, { params })
                 .then(response => {

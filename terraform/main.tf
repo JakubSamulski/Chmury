@@ -1,27 +1,31 @@
-resource "aws_instance" "terra_ec2" {
-  ami = var.ami
-  instance_type = var.instance_type
-  availability_zone = var.availability_zone
-  key_name = "chmury2"
-  network_interface {
-    device_index = 0
-    network_interface_id = aws_network_interface.terra_net_interface.id
+resource "aws_ecs_cluster" "chmury-terra-cluster" {
+  name = "chmury-terraform-cluster"
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
   }
-  provisioner "remote-exec" {
-    inline = [
-      "echo 'waiting for ssh'"
-    ]
-    connection {
-      type="ssh"
-      user="ubuntu"
-      private_key=file(local.private_key_path)
-      host= self.public_ip
-    }
+}
+resource "aws_cloudwatch_log_group" "example" {
+  name = "example"
+}
+
+resource "aws_ecs_service" "deploy_ssl_service" {
+  name            = "deploy-ssl-service"
+  cluster         = aws_ecs_cluster.chmury-terra-cluster.name
+  task_definition = aws_ecs_task_definition.deploy_ssl_terraform.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets         = [aws_subnet.terra_subnet.id]
+    security_groups = [aws_security_group.terra_SG.id]
+    assign_public_ip = true
   }
-  provisioner "local-exec" {
-    command = "ansible-playbook -i '${self.public_ip},' -u ubuntu --private-key ${local.private_key_path} playbook.yml"
+
+
+  deployment_controller {
+    type = "ECS"
   }
-  tags = {
-    name = "web_server"
-  }
+
 }

@@ -24,12 +24,7 @@ const Square = ({
             return;
         }
 
-        console.log("currentPlayer", currentPlayer);
-        console.log("playingAs", playingAs);
-        console.log("currentElement", currentElement);
-        console.log("finishedArrayState", finishedArrayState);
-        console.log("finishedState", finishedState);
-        console.log("gameState", gameState);
+
 
         if (currentElement !== "circle" && currentElement !== "cross") {
             const myCurrentPlayer = currentPlayer;

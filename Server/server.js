@@ -15,7 +15,6 @@ const app = express();
  function getIp(){
     const data = fetch('https://api.ipify.org?format=json')
     .json()
-    console.log(data)
      return data.ip;
 }
 
@@ -172,5 +171,5 @@ io.on("connection", (socket) => {
     })
 });
 
-console.log('Server is listening on port 3000');
+
 module.exports = {publicIp}

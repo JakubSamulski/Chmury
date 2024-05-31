@@ -10,7 +10,7 @@ const db = mysql.createConnection({
 
   db.connect(function(err) {
     if (err) throw err;
-    console.log("Connected!");
+
   });
 
 const createTableQuery = `
@@ -25,7 +25,7 @@ db.query(createTableQuery, (err, results) => {
       console.error('Error creating table:', err.stack);
       return;
     }
-    console.log('Table created successfully');
+
   });
 
 const saveGameResult = ( result) => {
@@ -39,7 +39,7 @@ const saveGameResult = ( result) => {
         console.error('Error saving game result:', err.stack);
         return;
       }
-      console.log('Game result saved successfully');
+
     });
   };
 

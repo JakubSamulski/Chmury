@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const {validateToken} = require("./auth");
-const {saveGameResult} = require("./database");
+const {saveGameResult, getResultsForPlayer} = require("./database");
 const exchange_code = require('./auth').exchange_code;
 const fetch = require('sync-fetch')
 const {readFileSync} = require("fs");
@@ -56,6 +56,11 @@ app.use(cors(corsOptions));
 app.get('/exchange-code', (req, res) => {
     let auth_code = req.query.auth_code
     exchange_code(auth_code).then((data) => {res.status(200).json({ data })});
+});
+
+app.get('/results', (req, res) => {
+   getResultsForPlayer("test").then((data) => {res.status(200).json({ data })});
+
 });
 
 var privateKey = readFileSync( 'key.pem' );
@@ -172,4 +177,3 @@ io.on("connection", (socket) => {
 });
 
 
-module.exports = {publicIp}

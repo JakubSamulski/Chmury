@@ -16,7 +16,8 @@ const db = mysql.createConnection({
 const createTableQuery = `
   CREATE TABLE IF NOT EXISTS GameResults (
     Player1 VARCHAR(50) NOT NULL,
-    Result VARCHAR(50) NOT NULL
+    Result VARCHAR(50) NOT NULL,
+    GameTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
   );
 `;
 
@@ -43,6 +44,42 @@ const saveGameResult = ( result) => {
     });
   };
 
+async function _getResultsForPlayer(playerName) {
+    const selectQuery = `
+      SELECT * FROM GameResults
+      WHERE Player1 = ?`;
+    const values = [playerName];
+
+    return new Promise((resolve, reject) => {
+        db.query(selectQuery, values, (err, results) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+const getResultsForPlayer = async (playerName) => {
+    try {
+        const results = await _getResultsForPlayer(playerName);
+        console.log(JSON.stringify(results)); // Log results as JSON
+        for(let i=0; i<results.length; i++){
+            if(results[i].Result ==="1"){
+                results[i].Result = "Win"
+            }
+            else if(results[i].Result ==="0"){
+                results[i].Result = "Lose"
+            }
+        }
+        return results;
+    } catch (error) {
+        console.error('Error fetching results:', error);
+        throw error;
+    }
+};
 module.exports = {
-    saveGameResult
+    saveGameResult,
+    getResultsForPlayer
 }

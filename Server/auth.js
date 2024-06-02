@@ -6,7 +6,6 @@ const jwkToPem = require('jwk-to-pem');
 
 
 const jsonwebtoken = require('jsonwebtoken');
-const {publicIp} = require("./server");
 const fetch = require("sync-fetch");
 const jsonWebKeys = [
     {

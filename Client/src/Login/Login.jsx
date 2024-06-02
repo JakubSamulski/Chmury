@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
+import './login.css';
 
 import {Link, useSearchParams} from "react-router-dom";
 
@@ -17,9 +18,8 @@ const Login = () => {
     if(!authCode) {
         return (
             <div className="login-container">
-                <h1>Login</h1>
                 <form onSubmit={handleSubmit}>
-                    <input type='button' value='back' className="btn" onClick={handleSubmit}/>
+                    <input type='button' value='Login' className="btn" onClick={handleSubmit}/>
                 </form>
             </div>
         );
@@ -47,6 +47,7 @@ const Login = () => {
                 window.localStorage.setItem('id_token', data.data.id_token);
                 window.localStorage.setItem('expires_in', data.data.expires_in);
                 window.localStorage.setItem('token_type', data.data.token_type);
+                window.location.href = '/login';
            }
 
     }

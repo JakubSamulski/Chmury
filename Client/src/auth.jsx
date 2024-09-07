@@ -31,6 +31,7 @@ async function refreshToken(){
         window.localStorage.setItem("id_token", tokens.id_token);
         return tokens;
     } catch (error) {
+        console.error(error);
 
     }
 }
@@ -41,7 +42,7 @@ async function postData(url, data, headers) {
 
         return response.data;
     } catch (error) {
-        // Optional: re-throw the error to handle it further up the call stack
+        console.error(error);
     }
 }
 export { getUsername, isTokenExpired ,refreshToken};

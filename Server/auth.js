@@ -1,4 +1,3 @@
-const {response} = require("express");
 const {post} = require("axios");
 
 
@@ -83,7 +82,7 @@ async function  exchange_code(code) {
     const port = process.env.VITE_CLIENT_PORT;
 
 
-    let redirect_uri="";
+    let redirect_uri;
     if(port==="80"){
         redirect_uri = "http://"+ip+"/login";
     }
@@ -105,13 +104,9 @@ async function  exchange_code(code) {
         redirect_uri: redirect_uri,
     };
     try {
-        console.log("ECHANGING CODE")
-        console.log("url", url);
-        console.log("data", data);
-        console.log("headers", headers);
         return await postData(url, data, headers);
     } catch (error) {
-
+        return error
     }
 
 }

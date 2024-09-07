@@ -29,18 +29,16 @@ if(process.env.VITE_DEPLOYMENT_TYPE==="local"){
 
 
 let port = process.env.VITE_CLIENT_PORT;
-let origin = ""
-if (port=="80"){
+let origin
+if (port==="80"){
     origin = "http://"+ip;
 }
-else if (port=="443"){
+else if (port==="443"){
     origin = "https://"+ip;
 }
 else{
     origin = "http://"+ip+":"+port;
 }
-
-const publicIp=ip;
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
@@ -55,11 +53,15 @@ app.use(cors(corsOptions));
 
 app.get('/exchange-code', (req, res) => {
     let auth_code = req.query.auth_code
-    exchange_code(auth_code).then((data) => {res.status(200).json({ data })});
+    exchange_code(auth_code).then((data) => {res.status(200).json({ data })}).catch(
+        res => res.status(400).json({ error: res.message })
+    );
 });
 
 app.get('/results', (req, res) => {
-   getResultsForPlayer("test").then((data) => {res.status(200).json({ data })});
+   getResultsForPlayer("test").then((data) => {res.status(200).json({ data }).catch(
+       res => res.status(400).json({ error: res.message })
+   )});
 
 });
 

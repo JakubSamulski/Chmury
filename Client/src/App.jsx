@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter as Router, Route, redirect, Routes, useSearchParams} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import Game from './Game';
 import Login from "./Login/Login.jsx";
 import ButtonComponent from "./Table.jsx";
@@ -10,10 +10,8 @@ const LoginWrapper = () => {
     const accessToken = localStorage.getItem("access_token");
 
     if (!accessToken) {
-        console.log("No access token")
         return <Login />;
     } else {
-        console.log(" access token")
         return <LoggedIn />;
     }
 };
